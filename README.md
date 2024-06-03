@@ -5,3 +5,8 @@
 2. To install all packages run: npm i
 3. To run the project: next dev
 4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## To run tests
+
+1. Run next command: test
+2. Open console to see the result.

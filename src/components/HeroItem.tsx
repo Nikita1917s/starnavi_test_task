@@ -25,6 +25,8 @@ interface EdgeItem {
   target: string;
 }
 
+export const dataTestid = "hero-item";
+
 function HeroItem({ hero }: { hero: Hero }) {
   const [isExtended, setIsExtended] = useState(false);
   const [dataNodes, setDataNodes] = useState<DataNode[]>([]);
@@ -90,7 +92,7 @@ function HeroItem({ hero }: { hero: Hero }) {
 
   return (
     <>
-      <TableRow>
+      <TableRow data-testid={dataTestid}>
         <TableCell className="font-medium">{hero.name}</TableCell>
         <TableCell className="hidden md:table-cell">{hero.gender}</TableCell>
         <TableCell>{hero.birth_year}</TableCell>

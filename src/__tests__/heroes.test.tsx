@@ -1,39 +1,61 @@
 import axios from "axios";
-import {fireEvent, render, screen} from '@testing-library/react';
+import "@testing-library/jest-dom";
+import "intersection-observer";
+
+import { render } from "@testing-library/react";
 import { starWarsApi } from "@/actions/StarWarsApi";
-import { Hero } from "@/types/starWars";
-import HeroItem from "@/components/HeroItem";
+import {
+  filmsData,
+  heroesData,
+  shipsData,
+} from "../shared/config/testsMockData";
+import { dataTestid as heroItemTestId } from "@/components/HeroItem";
+import { HeroesTable } from "@/components/HeroesTable";
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
-
 mockedAxios.create.mockImplementation(() => axios);
 
-interface TestData {
-  results: Hero[];
+export interface TestData {
   next: string | null;
 }
-const testData: TestData = {
-  results: [
-    {
-      id: 1,
-      name: "test",
-      gender: "Male",
-      birth_year: "1996",
-      films: [],
-      starships: [],
-    },
-  ],
-  next: null,
-};
 
 describe("fetchData", () => {
-  it("fetches heroes data", async () => {
-    const resp = { data: testData };
-    mockedAxios.get.mockResolvedValue(resp);
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("get heroes data", async () => {
+    const response = { data: heroesData };
+    mockedAxios.get.mockResolvedValue(response);
     const result = await starWarsApi.getHeroes();
 
-    expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-    expect(result).toEqual(testData);
+    expect(mockedAxios.get).toHaveBeenCalledWith("people?page=1");
+    expect(result).toEqual(heroesData);
+  });
+
+  it("get films data", async () => {
+    const response = { data: filmsData };
+    mockedAxios.get.mockResolvedValue(response);
+    const result = await starWarsApi.getFilms("1");
+
+    expect(mockedAxios.get).toHaveBeenCalledWith("films/?id__in=1");
+    expect(result).toEqual(filmsData);
+  });
+
+  it("get ships data", async () => {
+    const response = { data: shipsData };
+    mockedAxios.get.mockResolvedValue(response);
+    const result = await starWarsApi.getShips("1");
+
+    expect(mockedAxios.get).toHaveBeenCalledWith("starships/?id__in=1");
+    expect(result).toEqual(shipsData);
+  });
+
+  it("render heroItem", async () => {
+    const { getByTestId } = render(
+      <HeroesTable initialHeroes={heroesData.results} />
+    );
+    expect(getByTestId(heroItemTestId)).toBeInTheDocument();
   });
 });
